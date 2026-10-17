@@ -31,6 +31,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("profiles", help="Print built-in demo profiles")
     sub.add_parser("serve", help="Local JSON API for a separate UI")
+    sub.add_parser("desktop", help="Start TrendPilot in the background and open its UI")
 
     args = parser.parse_args(argv)
     if args.command == "profiles":
@@ -42,6 +43,10 @@ def main(argv: list[str] | None = None) -> int:
 
         serve()
         return 0
+    if args.command == "desktop":
+        from trendpilot.desktop import launch
+
+        return launch()
     return _run(args)
 
 

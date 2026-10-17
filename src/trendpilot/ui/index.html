@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TrendPilot — AI Business Analyst & Market Intelligence</title>
+  <title>TrendPilot — Local Company Research</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -165,6 +166,797 @@
     .wave-bar-2 { animation: waveBar 0.7s ease-in-out infinite 0.15s; }
     .wave-bar-3 { animation: waveBar 0.7s ease-in-out infinite 0.3s; }
     .wave-bar-4 { animation: waveBar 0.7s ease-in-out infinite 0.45s; }
+
+    :focus-visible {
+      outline: 3px solid rgba(18, 158, 196, 0.55);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 767px) {
+      body { height: 100dvh; }
+
+      #viewHero {
+        align-items: flex-start;
+        padding-top: calc(56px + env(safe-area-inset-top) + 0.65rem);
+        padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+        scroll-padding-top: calc(56px + env(safe-area-inset-top));
+      }
+
+      #viewHero > div {
+        gap: 1.35rem;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+      }
+
+      #viewHero h1 {
+        font-size: clamp(1.95rem, 9vw, 2.35rem);
+        line-height: 1.04;
+        letter-spacing: -0.045em;
+      }
+
+      #viewHero > div > div:first-child { gap: 0.85rem; }
+      .greeting-card { padding: 1rem; border-radius: 1.15rem; }
+      .greeting-card > div { gap: 0.75rem; }
+      .greeting-card p { font-size: 0.875rem; line-height: 1.55; }
+
+      #orbStageContainer {
+        min-height: 310px;
+        margin-top: -0.5rem;
+      }
+
+      #orbStageContainer > #orbParallaxLayer > img { max-width: min(100%, 360px); }
+      #orbStageContainer .orb-pill { padding: 0.35rem 0.65rem; gap: 0.4rem; }
+      #orbStageContainer .orb-pill > span:first-child { width: 1.75rem; height: 1.75rem; }
+      #orbStageContainer .orb-pill > span:last-child { font-size: 0.72rem; }
+      #orbStageContainer > .text-\[11\.5px\] { padding: 0 0.5rem; text-align: center; }
+
+      #promptForm {
+        min-height: 3.5rem;
+        padding: 0.35rem 0.55rem;
+        gap: 0.35rem;
+        border-radius: 1.25rem;
+      }
+
+      #promptInput { min-width: 0; font-size: 0.875rem; }
+      #promptForm button { min-width: 2.5rem; min-height: 2.5rem; }
+      #sendPromptBtn { width: 2.6rem; height: 2.6rem; }
+
+      #promptDock {
+        bottom: max(0.75rem, env(safe-area-inset-bottom));
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      #viewChat, #viewHistory, #viewSaved {
+        padding-top: calc(56px + env(safe-area-inset-top) + 1rem);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Clean research workspace */
+    :root {
+      --bg-sidebar: #ffffff;
+      --bg-canvas: #f5f7fb;
+      --text-navy: #14283d;
+      --text-slate: #64758b;
+      --teal-primary: #087f8c;
+      --teal-bright: #22b8b2;
+      --teal-soft: #e6f7f5;
+    }
+
+    body { background: #f5f7fb; color: #14283d; }
+    #sidebar {
+      width: 244px !important;
+      background: #fff !important;
+      border-color: #e7ecf2 !important;
+      box-shadow: 8px 0 30px rgba(19, 43, 68, 0.035);
+    }
+    #sidebar .border-t, #sidebar .border-b { border-color: #edf0f4 !important; }
+    #brandHomeBtn { color: #13283e; letter-spacing: -0.04em; }
+    #navNewChat {
+      color: #fff !important;
+      background: linear-gradient(135deg, #087f8c, #0e9c9a) !important;
+      box-shadow: 0 8px 18px rgba(8, 127, 140, 0.18);
+    }
+    #navNewChat:hover { background: #066c78 !important; }
+    #navHistory, #navSaved, #navSettings { color: #52647a !important; }
+    #navHistory:hover, #navSaved:hover, #navSettings:hover { background: #f3f7fa !important; }
+    .sidebar-empty-state {
+      padding: 8px 9px;
+      color: #a0acba;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .focus-check { display: inline-block; min-width: 12px; font-weight: 800; }
+
+    main {
+      background:
+        radial-gradient(circle at 84% 12%, rgba(34, 184, 178, 0.075), transparent 26%),
+        #f7f9fc;
+    }
+    main > header { padding: 17px 32px 9px !important; }
+    #topContextPill, #langToggleBtn {
+      background: #fff !important;
+      border-color: #e4eaf0 !important;
+      box-shadow: 0 2px 8px rgba(18, 39, 62, 0.04) !important;
+    }
+    #viewHero {
+      align-items: flex-start !important;
+      padding: 14px 34px 120px !important;
+      scroll-behavior: smooth;
+    }
+    #viewHero > div {
+      width: 100%;
+      max-width: 1160px !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1.03fr) minmax(0, 0.97fr) !important;
+      align-items: start !important;
+      gap: clamp(28px, 4vw, 54px) !important;
+      margin: 0 auto !important;
+      padding: 14px 0 30px !important;
+    }
+    #viewHero > div > div:first-child,
+    #viewHero > div > #orbStageContainer {
+      grid-column: auto !important;
+      width: 100%;
+      min-width: 0;
+    }
+    #viewHero > div > div:first-child { gap: 0 !important; }
+    #viewHero > div > div:first-child > .greeting-card { margin-top: 14px !important; }
+    #viewHero > div > div:first-child > .space-y-3.pt-1 { margin-top: 9px !important; }
+    #viewHero h1 {
+      color: #152b41;
+      font-size: clamp(2.4rem, 4vw, 3.5rem) !important;
+      line-height: 1.03 !important;
+      letter-spacing: -0.055em !important;
+    }
+    .headline-teal {
+      background: linear-gradient(95deg, #087f8c 0%, #10a5a0 75%, #24bdb3 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #viewHero h1 + p { color: #64758b !important; max-width: 500px !important; }
+    .greeting-card {
+      background: #fff !important;
+      border: 1px solid #e7ecf2 !important;
+      border-radius: 20px !important;
+      box-shadow: 0 10px 30px rgba(20, 40, 61, 0.045) !important;
+      padding: 15px !important;
+    }
+    .greeting-card > div { align-items: center !important; gap: 12px !important; }
+    .greeting-card p { font-size: 12.5px !important; line-height: 1.45 !important; }
+    .greeting-card .space-y-3 { row-gap: 7px !important; }
+    .greeting-card .pt-1 { padding-top: 0 !important; }
+    .greeting-card > div > div:first-child { width: 34px !important; height: 34px !important; margin-top: 0 !important; }
+    .greeting-card > div > div:first-child svg { width: 17px !important; height: 17px !important; }
+    .greeting-card > div > div:first-child {
+      background: #e8f8f5 !important;
+      box-shadow: none !important;
+    }
+    .greeting-card p { color: #52647a !important; }
+    .focus-chip { border-radius: 999px !important; }
+    .sample-prompt-btn {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 0;
+      justify-content: space-between;
+      gap: 8px !important;
+      padding: 7px 11px !important;
+      border-radius: 13px !important;
+      font-size: 12px !important;
+      background: #fff !important;
+      border-color: #e3e9f0 !important;
+      color: #41556b !important;
+      box-shadow: 0 2px 7px rgba(20, 40, 61, 0.025);
+    }
+    .sample-prompt-btn:hover {
+      border-color: #8bd2ca !important;
+      color: #087f8c !important;
+      box-shadow: 0 8px 20px rgba(8, 127, 140, 0.09) !important;
+    }
+
+    #orbStageContainer {
+      min-height: 0 !important;
+      align-items: stretch !important;
+      justify-content: flex-start !important;
+      gap: 15px;
+      overflow: visible;
+    }
+    .research-topic-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 14px;
+      padding: 3px 2px 2px;
+    }
+    .research-eyebrow {
+      color: #0b9292;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      margin-bottom: 8px;
+    }
+    .research-topic-heading h2 {
+      color: #152b41;
+      font-size: clamp(1.35rem, 2vw, 1.7rem);
+      font-weight: 750;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin: 0;
+    }
+    .research-topic-heading p {
+      color: #75849a;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 7px 0 0;
+      max-width: 330px;
+    }
+    .research-source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      color: #087f8c;
+      background: #e9f8f5;
+      border: 1px solid #d9f0eb;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .research-source-badge > span:first-child { font-size: 8px; }
+    #orbStageContainer .orb-glow-backdrop { display: none !important; }
+    #orbParallaxLayer {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch !important;
+      justify-items: stretch;
+      gap: 11px;
+      width: 100% !important;
+      max-width: none !important;
+      transform: none !important;
+    }
+    #orbParallaxLayer > img { display: none !important; }
+    #orbStageContainer .orb-pill {
+      position: relative !important;
+      inset: auto !important;
+      display: grid !important;
+      grid-template-columns: 38px minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      align-content: center;
+      align-items: center;
+      justify-content: start;
+      gap: 4px 11px !important;
+      width: 100%;
+      min-height: 112px;
+      padding: 15px !important;
+      background: rgba(255, 255, 255, 0.94) !important;
+      border: 1px solid #e5eaf0 !important;
+      border-radius: 17px !important;
+      box-shadow: 0 5px 16px rgba(20, 40, 61, 0.035), inset 0 1px #fff !important;
+      text-align: left;
+      animation: none !important;
+      transform: none !important;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease !important;
+    }
+    #orbStageContainer .orb-pill > span:first-child {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      width: 38px !important;
+      height: 38px !important;
+      color: #087f8c !important;
+      background: #e8f8f5 !important;
+      border: 1px solid #d9f0eb;
+      border-radius: 12px !important;
+    }
+    #orbStageContainer .orb-pill > span:first-child svg { width: 17px; height: 17px; }
+    #orbStageContainer .orb-pill .topic-title {
+      grid-column: 2;
+      align-self: end;
+      padding: 0 !important;
+      color: #20364b !important;
+      font-size: 13.5px !important;
+      font-weight: 750;
+      line-height: 1.25;
+    }
+    #orbStageContainer .orb-pill .topic-description {
+      grid-column: 2;
+      align-self: start;
+      color: #7b899b;
+      font-size: 10.5px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    #orbStageContainer .orb-pill:hover,
+    #orbStageContainer .orb-pill.active-pill {
+      background: #fff !important;
+      border-color: #83cbc4 !important;
+      box-shadow: 0 12px 25px rgba(8, 127, 140, 0.10), 0 0 0 3px rgba(16, 165, 160, 0.07) !important;
+      transform: translateY(-2px) !important;
+    }
+    #orbInspectorCard {
+      width: 100%;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 17px !important;
+      background: #fff !important;
+      border: 1px solid #e2eaf0 !important;
+      border-radius: 18px !important;
+      box-shadow: 0 10px 28px rgba(20, 40, 61, 0.06) !important;
+    }
+    #orbInspectorCard > div:first-child { border-color: #edf1f4 !important; }
+    #inspectorMetricsGrid > div { background: #f6f9fb !important; border-color: #e8edf2 !important; }
+    #orbInspectorCard > div:last-child { gap: 14px; align-items: center; }
+    #inspectorTakeaway {
+      display: block;
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      color: #718198 !important;
+      line-height: 1.45;
+    }
+    #inspectorLaunchChatBtn, #sendPromptBtn {
+      background: linear-gradient(135deg, #087f8c, #0e9c9a) !important;
+      box-shadow: 0 6px 14px rgba(8, 127, 140, 0.17);
+    }
+    #inspectorLaunchChatBtn:hover, #sendPromptBtn:hover { background: #066c78 !important; }
+    #orbStageContainer > .text-\[11\.5px\] { display: none !important; }
+
+    #promptDock > div { max-width: 870px !important; margin: 0 auto !important; }
+    #promptForm {
+      min-height: 62px;
+      padding: 8px 9px 8px 20px !important;
+      background: rgba(255, 255, 255, 0.97) !important;
+      border: 1px solid #e0e7ee !important;
+      border-radius: 20px !important;
+      box-shadow: 0 12px 34px rgba(25, 48, 72, 0.10), 0 2px 8px rgba(25, 48, 72, 0.04) !important;
+    }
+    #promptForm:focus-within {
+      border-color: #8ecfc9 !important;
+      box-shadow: 0 14px 36px rgba(8, 127, 140, 0.12), 0 0 0 3px rgba(16, 165, 160, 0.08) !important;
+    }
+    #promptInput { color: #20364b !important; font-size: 14px !important; }
+    #sendPromptBtn { width: 44px; height: 44px; border-radius: 15px !important; }
+    #liveProgress {
+      background: #fff !important;
+      border-color: #e5eaf0 !important;
+      box-shadow: 0 4px 12px rgba(20, 40, 61, 0.035);
+    }
+
+    @media (max-width: 900px) {
+      #viewHero > div {
+        max-width: 670px !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 28px !important;
+        padding-top: 14px !important;
+      }
+      #viewHero > div > #orbStageContainer { grid-column: 1 !important; }
+      #viewHero { padding-left: 26px !important; padding-right: 26px !important; }
+      #orbStageContainer { gap: 12px; }
+    }
+    @media (max-width: 767px) {
+      main > header { padding: 10px 17px 6px !important; }
+      #viewHero {
+        padding: calc(56px + env(safe-area-inset-top) + 8px) 17px 124px !important;
+      }
+      #viewHero > div { gap: 23px !important; padding: 5px 0 18px !important; }
+      #viewHero h1 { font-size: clamp(2.15rem, 9.2vw, 2.75rem) !important; }
+      #viewHero > div > div:first-child { gap: 1.1rem !important; }
+      .greeting-card { padding: 15px !important; }
+      .research-topic-heading { align-items: flex-start; }
+      .research-topic-heading p { max-width: 280px; }
+      .research-source-badge { margin-top: 2px; }
+      #promptDock {
+        left: 0 !important;
+        right: 0 !important;
+        bottom: max(10px, env(safe-area-inset-bottom)) !important;
+        padding: 0 12px !important;
+      }
+      #promptForm { min-height: 56px; padding-left: 14px !important; }
+      #sendPromptBtn { width: 40px; height: 40px; }
+      #orbInspectorCard > div:last-child { grid-template-columns: 1fr; }
+      #inspectorLaunchChatBtn { justify-self: start; }
+    }
+    @media (max-width: 430px) {
+      #orbParallaxLayer { grid-template-columns: minmax(0, 1fr); }
+      #orbStageContainer .orb-pill { min-height: 82px; }
+      .research-source-badge { font-size: 9px; padding: 6px 8px; }
+    }
+
+    /* Interactive depth: a CSS/SVG signal compass plus pointer-reactive topic cards. */
+    .signal-scene {
+      --glare-x: 50%;
+      --glare-y: 50%;
+      position: relative;
+      width: 100%;
+      height: clamp(124px, 13vw, 136px);
+      min-height: 124px;
+      overflow: hidden;
+      isolation: isolate;
+      perspective: 900px;
+      transform-style: preserve-3d;
+      border: 1px solid rgba(129, 231, 239, 0.2);
+      border-radius: 23px;
+      background:
+        radial-gradient(ellipse at 50% 66%, rgba(12, 189, 185, 0.27), transparent 32%),
+        radial-gradient(ellipse at 20% 8%, rgba(73, 149, 226, 0.21), transparent 42%),
+        linear-gradient(135deg, #081d32 0%, #0b3045 55%, #082438 100%);
+      box-shadow: 0 18px 42px rgba(12, 39, 58, 0.16), inset 0 1px rgba(255, 255, 255, 0.12);
+      transition: transform 180ms ease-out, box-shadow 260ms ease;
+      will-change: transform;
+    }
+    .signal-scene::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      background-image: linear-gradient(rgba(151, 235, 238, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(151, 235, 238, 0.1) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
+      transform: perspective(350px) rotateX(58deg) scale(1.35) translateY(15%);
+      transform-origin: center bottom;
+      opacity: 0.42;
+    }
+    .signal-scene::after {
+      content: "";
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background: radial-gradient(190px circle at var(--glare-x) var(--glare-y), rgba(175, 255, 251, 0.17), transparent 72%);
+      mix-blend-mode: screen;
+    }
+    .signal-orbit {
+      position: absolute;
+      left: 50%;
+      top: 49%;
+      border: 1px solid rgba(144, 245, 242, 0.35);
+      border-radius: 50%;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+    .signal-orbit--wide {
+      width: min(56%, 270px);
+      height: 82px;
+      box-shadow: 0 0 24px rgba(52, 222, 210, 0.12), inset 0 0 18px rgba(52, 222, 210, 0.07);
+      animation: signal-orbit-wide 17s linear infinite;
+    }
+    .signal-orbit--tilt {
+      width: min(44%, 205px);
+      height: 106px;
+      border-color: rgba(113, 188, 252, 0.3);
+      animation: signal-orbit-tilt 21s linear infinite reverse;
+    }
+    .signal-orbit--inner {
+      width: 110px;
+      height: 110px;
+      border-color: rgba(133, 248, 230, 0.27);
+      animation: signal-orbit-inner 30s linear infinite;
+    }
+    .signal-core-halo {
+      position: absolute;
+      left: 50%;
+      top: 49%;
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(60, 235, 220, 0.24), rgba(26, 163, 192, 0.08) 52%, transparent 72%);
+      filter: blur(5px);
+      transform: translate(-50%, -50%) translateZ(20px);
+      animation: signal-pulse 3.8s ease-in-out infinite;
+    }
+    .signal-crystal {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: 80px;
+      height: 94px;
+      overflow: visible;
+      transform: translate(-50%, -50%) translateZ(45px);
+      filter: drop-shadow(0 8px 19px rgba(35, 226, 219, 0.5));
+      animation: signal-crystal-float 5.2s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+    .signal-star {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #b9fff7;
+      box-shadow: 0 0 9px 2px rgba(101, 250, 235, 0.65);
+      animation: signal-twinkle 2.4s ease-in-out infinite alternate;
+    }
+    .signal-star--one { left: 19%; top: 28%; }
+    .signal-star--two { right: 18%; top: 25%; width: 3px; height: 3px; animation-delay: -1s; }
+    .signal-star--three { right: 27%; bottom: 17%; width: 2px; height: 2px; animation-delay: -1.7s; }
+    @keyframes signal-orbit-wide {
+      from { transform: translate(-50%, -50%) rotateX(66deg) rotateZ(-15deg); }
+      to { transform: translate(-50%, -50%) rotateX(66deg) rotateZ(345deg); }
+    }
+    @keyframes signal-orbit-tilt {
+      from { transform: translate(-50%, -50%) rotateX(67deg) rotateY(52deg) rotateZ(0deg); }
+      to { transform: translate(-50%, -50%) rotateX(67deg) rotateY(52deg) rotateZ(360deg); }
+    }
+    @keyframes signal-orbit-inner {
+      from { transform: translate(-50%, -50%) rotateX(70deg) rotateY(0deg); }
+      to { transform: translate(-50%, -50%) rotateX(70deg) rotateY(360deg); }
+    }
+    @keyframes signal-pulse {
+      0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) translateZ(20px) scale(0.88); }
+      50% { opacity: 1; transform: translate(-50%, -50%) translateZ(20px) scale(1.12); }
+    }
+    @keyframes signal-crystal-float {
+      0%, 100% { transform: translate(-50%, -50%) translateZ(45px) rotateY(-8deg) rotateZ(-2deg); }
+      50% { transform: translate(-50%, -54%) translateZ(58px) rotateY(8deg) rotateZ(2deg); }
+    }
+    @keyframes signal-twinkle {
+      from { opacity: 0.3; transform: scale(0.75); }
+      to { opacity: 1; transform: scale(1.2); }
+    }
+    #orbStageContainer .orb-pill {
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+      --shine-x: 50%;
+      --shine-y: 50%;
+      min-height: 96px;
+      padding: 12px !important;
+      transform-style: preserve-3d !important;
+      backface-visibility: hidden;
+      will-change: transform;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease !important;
+    }
+    #orbStageContainer .orb-pill::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(150px circle at var(--shine-x) var(--shine-y), rgba(37, 191, 184, 0.16), transparent 75%);
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+    #orbStageContainer .orb-pill > span { position: relative; z-index: 1; }
+    #orbStageContainer .orb-pill:hover,
+    #orbStageContainer .orb-pill.active-pill,
+    #orbStageContainer .orb-pill:focus-visible {
+      transform: perspective(850px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateY(-3px) translateZ(12px) !important;
+    }
+    #orbStageContainer .orb-pill:hover::before,
+    #orbStageContainer .orb-pill.active-pill::before,
+    #orbStageContainer .orb-pill:focus-visible::before { opacity: 1; }
+    #orbStageContainer .orb-pill:focus-visible { outline: 2px solid #29b8b1; outline-offset: 3px; }
+    @media (max-width: 767px) {
+      .signal-scene { height: 154px; min-height: 154px; }
+      .signal-orbit--wide { width: 66%; }
+      .signal-orbit--tilt { width: 54%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .signal-scene, #orbStageContainer .orb-pill { will-change: auto; }
+    }
+
+    /* Midnight neon skin inspired by the supplied references. */
+    :root {
+      --night: #060911;
+      --night-raised: #0b1220;
+      --night-card: #0d1727;
+      --night-border: rgba(142, 177, 220, 0.16);
+      --night-text: #f2f6ff;
+      --night-muted: #91a2bb;
+      --neon-blue: #63b7ff;
+      --neon-cyan: #45e3ed;
+      --neon-violet: #9a7bff;
+    }
+    body { background: var(--night) !important; color: var(--night-text) !important; }
+    #sidebar {
+      background: linear-gradient(180deg, #080e18 0%, #090f19 58%, #070b13 100%) !important;
+      border-color: rgba(123, 158, 199, 0.15) !important;
+      box-shadow: 12px 0 40px rgba(0, 0, 0, 0.24) !important;
+      color: #dce8f7;
+    }
+    #sidebar .border-t, #sidebar .border-b { border-color: rgba(142, 177, 220, 0.12) !important; }
+    #brandHomeBtn { color: #f4f7ff !important; }
+    #brandHomeBtn span { color: #f4f7ff !important; }
+    #navNewChat {
+      background: linear-gradient(115deg, #1763d5 0%, #278adf 48%, #2cbdd2 100%) !important;
+      color: #fff !important;
+      box-shadow: 0 8px 24px rgba(37, 133, 232, 0.27), inset 0 1px rgba(255, 255, 255, 0.22) !important;
+    }
+    #navNewChat:hover { filter: brightness(1.12); }
+    #navNewChat span, #navNewChat svg { color: #fff !important; }
+    #navHistory, #navSaved, #navSettings { color: #a8b8cc !important; }
+    #navHistory:hover, #navSaved:hover, #navSettings:hover,
+    #userProfileBtn:hover { background: rgba(135, 170, 213, 0.09) !important; color: #f1f6ff !important; }
+    #sidebar .sidebar-empty-state { color: #73849c !important; }
+    #sidebar [id="historyCountBadge"], #sidebar [id="savedCountBadge"] {
+      background: rgba(108, 148, 198, 0.17) !important;
+      color: #b6d3f1 !important;
+    }
+    #userProfileBtn { color: #d7e4f3 !important; }
+    #userProfileBtn .text-xs { color: #dbe8f7 !important; }
+    #userProfileBtn .text-\[11px\] { color: #8295ad !important; }
+    #sidebarUserName { color: #dbe8f7 !important; }
+    #sidebarBizTag { color: #8295ad !important; }
+    #userProfileBtn svg { color: #8da2bb !important; }
+    #userProfileBtn .rounded-full { background: #172943 !important; color: #9edfff !important; border-color: rgba(144, 183, 230, 0.2) !important; }
+    #profileMenuPopover, #langDropdown, #attachPopover {
+      background: rgba(10, 18, 31, 0.97) !important;
+      border-color: rgba(137, 177, 224, 0.2) !important;
+      box-shadow: 0 20px 56px rgba(0, 0, 0, 0.45) !important;
+      color: #dce8f7 !important;
+    }
+    .preset-switch-btn, .lang-option, .attach-sample-item { color: #c9d7e8 !important; }
+    .preset-switch-btn:hover, .lang-option:hover, .attach-sample-item:hover { background: rgba(110, 153, 211, 0.14) !important; }
+    .lang-option.bg-\[\#eaf4f8\] { background: rgba(43, 129, 220, 0.22) !important; color: #eff7ff !important; }
+
+    main {
+      background:
+        radial-gradient(ellipse at 84% 9%, rgba(34, 109, 224, 0.19), transparent 31%),
+        radial-gradient(ellipse at 63% 48%, rgba(83, 53, 168, 0.12), transparent 34%),
+        radial-gradient(ellipse at 20% 95%, rgba(7, 128, 160, 0.12), transparent 35%),
+        #070b13 !important;
+    }
+    main > header { background: transparent; }
+    #topContextPill, #langToggleBtn, #backToHeroBtn {
+      background: rgba(13, 22, 37, 0.82) !important;
+      border-color: rgba(139, 177, 220, 0.19) !important;
+      box-shadow: 0 7px 22px rgba(0, 0, 0, 0.18), inset 0 1px rgba(255, 255, 255, 0.04) !important;
+      color: #d9e7f7 !important;
+      backdrop-filter: blur(16px);
+    }
+    #topContextPill strong { color: #f3f7ff !important; }
+    #topContextPill span:last-child { color: #6fcbff !important; }
+    #viewHero, #viewChat, #viewHistory, #viewSaved { background: transparent !important; color: var(--night-text) !important; }
+    #viewHero h1 { color: #f5f7ff !important; text-shadow: 0 8px 30px rgba(87, 126, 255, 0.12); }
+    #viewHero h1 > span:first-child { color: #f5f7ff !important; }
+    .headline-teal {
+      background: linear-gradient(100deg, #6fdcff 0%, #7ba9ff 45%, #b58aff 100%) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+    #viewHero h1 + p { color: #9aaac0 !important; }
+    .greeting-card {
+      background: linear-gradient(135deg, rgba(17, 29, 47, 0.94), rgba(10, 19, 32, 0.88)) !important;
+      border-color: rgba(142, 179, 225, 0.17) !important;
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.06) !important;
+      backdrop-filter: blur(18px);
+    }
+    .greeting-card p { color: #bac8d9 !important; }
+    .greeting-card > div > div:first-child { background: linear-gradient(145deg, rgba(56, 147, 255, 0.24), rgba(108, 86, 255, 0.24)) !important; color: #8cddff !important; border: 1px solid rgba(117, 188, 255, 0.18); }
+    .focus-chip {
+      background: rgba(29, 43, 64, 0.78) !important;
+      border-color: transparent !important;
+      color: #b4c3d7 !important;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+    .focus-chip[aria-pressed="true"] {
+      color: #dffaff !important;
+      background: linear-gradient(110deg, rgba(39, 111, 218, 0.36), rgba(26, 163, 192, 0.22)) !important;
+      border-color: rgba(92, 197, 255, 0.38) !important;
+      box-shadow: 0 0 20px rgba(54, 157, 239, 0.12), inset 0 1px rgba(255, 255, 255, 0.08) !important;
+    }
+    .sample-prompt-btn {
+      color: #c4d3e6 !important;
+      background: linear-gradient(145deg, rgba(17, 29, 48, 0.96), rgba(10, 18, 31, 0.98)) !important;
+      border-color: rgba(139, 176, 220, 0.17) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px rgba(255, 255, 255, 0.05) !important;
+    }
+    .sample-prompt-btn:hover { color: #f1f8ff !important; border-color: rgba(85, 190, 255, 0.52) !important; box-shadow: 0 12px 28px rgba(24, 105, 208, 0.2), inset 0 1px rgba(255, 255, 255, 0.08) !important; }
+    .sample-prompt-btn .prompt-arrow { color: #69cfff !important; }
+    .research-eyebrow { color: #6bd7f4 !important; }
+    .research-topic-heading h2 { color: #f1f5ff !important; text-shadow: 0 5px 20px rgba(83, 119, 255, 0.12); }
+    .research-topic-heading p { color: #8e9eb5 !important; }
+    .research-source-badge {
+      color: #b8ebff !important;
+      background: rgba(25, 82, 128, 0.3) !important;
+      border-color: rgba(83, 174, 255, 0.25) !important;
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.05), 0 0 22px rgba(39, 144, 238, 0.08);
+    }
+    .signal-scene {
+      border-color: rgba(113, 158, 255, 0.32) !important;
+      background:
+        radial-gradient(ellipse at 50% 60%, rgba(42, 115, 255, 0.32), transparent 36%),
+        radial-gradient(ellipse at 62% 48%, rgba(137, 62, 244, 0.25), transparent 42%),
+        linear-gradient(130deg, #070d1a 0%, #0b1730 48%, #091322 100%) !important;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), 0 0 34px rgba(40, 109, 255, 0.1), inset 0 1px rgba(223, 240, 255, 0.11) !important;
+    }
+    .signal-scene::before {
+      background-image: linear-gradient(rgba(129, 178, 255, 0.13) 1px, transparent 1px), linear-gradient(90deg, rgba(129, 178, 255, 0.13) 1px, transparent 1px) !important;
+      opacity: 0.52 !important;
+    }
+    .signal-orbit { border-color: rgba(124, 188, 255, 0.48) !important; box-shadow: 0 0 24px rgba(68, 151, 255, 0.13) !important; }
+    .signal-orbit--tilt { border-color: rgba(178, 130, 255, 0.4) !important; }
+    .signal-orbit--inner { border-color: rgba(91, 223, 255, 0.38) !important; }
+    .signal-crystal { filter: drop-shadow(0 8px 20px rgba(43, 143, 255, 0.58)) drop-shadow(0 0 27px rgba(145, 83, 255, 0.3)) !important; }
+
+    #orbStageContainer .orb-pill {
+      color: #e9f1ff !important;
+      background: linear-gradient(145deg, rgba(16, 27, 46, 0.96), rgba(10, 17, 30, 0.98)) !important;
+      border-color: rgba(142, 178, 225, 0.17) !important;
+      box-shadow: 0 9px 24px rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.06) !important;
+      backdrop-filter: blur(16px);
+    }
+    #orbStageContainer .orb-pill > span:first-child {
+      color: #8fddff !important;
+      background: linear-gradient(145deg, rgba(39, 117, 227, 0.25), rgba(120, 77, 232, 0.2)) !important;
+      border-color: rgba(111, 184, 255, 0.22) !important;
+    }
+    #orbStageContainer .orb-pill .topic-title { color: #edf5ff !important; }
+    #orbStageContainer .orb-pill .topic-description { color: #8fa1ba !important; }
+    #orbStageContainer .orb-pill:hover,
+    #orbStageContainer .orb-pill.active-pill,
+    #orbStageContainer .orb-pill:focus-visible {
+      background: linear-gradient(145deg, rgba(21, 39, 68, 0.98), rgba(13, 24, 43, 0.99)) !important;
+      border-color: rgba(88, 183, 255, 0.65) !important;
+      box-shadow: 0 16px 34px rgba(18, 97, 206, 0.24), 0 0 0 1px rgba(68, 175, 255, 0.17), inset 0 1px rgba(255, 255, 255, 0.1) !important;
+    }
+    #orbStageContainer .orb-pill::before { background: radial-gradient(150px circle at var(--shine-x) var(--shine-y), rgba(76, 171, 255, 0.21), transparent 76%) !important; }
+    #orbStageContainer .orb-pill:focus-visible { outline-color: #72d8ff !important; }
+    #orbInspectorCard {
+      color: #e7effc !important;
+      background: linear-gradient(145deg, rgba(14, 25, 43, 0.98), rgba(9, 16, 29, 0.99)) !important;
+      border-color: rgba(131, 176, 228, 0.2) !important;
+      box-shadow: 0 20px 46px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.06) !important;
+    }
+    #orbInspectorCard > div:first-child { border-color: rgba(142, 177, 220, 0.16) !important; }
+    #orbInspectorCard h3, #orbInspectorCard h2, #orbInspectorCard strong { color: #f0f6ff !important; }
+    #orbInspectorCard p, #orbInspectorCard span { color: #a7b9d0; }
+    #orbInspectorCard > div:last-child { color: #a7b9d0 !important; }
+    #orbInspectorCard #inspectorTakeaway { color: #9bacbf !important; }
+    #orbInspectorCard #inspectorMetricsGrid > div {
+      background: rgba(21, 35, 57, 0.85) !important;
+      border-color: rgba(139, 177, 224, 0.14) !important;
+      color: #dce8f7 !important;
+    }
+    #orbInspectorCard #inspectorMetricsGrid > div > div:first-child { color: #91a5bd !important; }
+    #inspectorMetricsGrid > div > div:nth-child(2) { color: #f0f6ff !important; }
+    #inspectorMetricsGrid > div > div:nth-child(3) { color: #aabbd1 !important; }
+    #inspectorBadgeIcon { background: rgba(42, 127, 224, 0.24) !important; color: #91dfff !important; }
+    #closeInspectorBtn { color: #9badc4 !important; }
+    #closeInspectorBtn:hover { color: #fff !important; background: rgba(134, 169, 213, 0.12) !important; }
+
+    #promptDock #promptForm {
+      color: #e8f2ff !important;
+      background: rgba(9, 16, 28, 0.94) !important;
+      border-color: rgba(133, 171, 219, 0.24) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 32px rgba(42, 112, 222, 0.1), inset 0 1px rgba(255, 255, 255, 0.07) !important;
+      backdrop-filter: blur(20px);
+    }
+    #promptForm:focus-within { border-color: rgba(91, 193, 255, 0.56) !important; box-shadow: 0 16px 42px rgba(13, 97, 199, 0.2), 0 0 0 3px rgba(73, 159, 255, 0.1) !important; }
+    #promptInput { color: #f1f6ff !important; caret-color: #61dfff; }
+    #promptInput::placeholder { color: #71849e !important; opacity: 1; }
+    #sendPromptBtn, #inspectorLaunchChatBtn { background: linear-gradient(135deg, #397cff, #29c5e6) !important; box-shadow: 0 7px 22px rgba(43, 128, 245, 0.32), inset 0 1px rgba(255, 255, 255, 0.22) !important; }
+    #sendPromptBtn:hover, #inspectorLaunchChatBtn:hover { filter: brightness(1.12); }
+    #liveProgress { background: rgba(13, 23, 39, 0.97) !important; color: #d9e7f7 !important; border-color: rgba(139, 177, 224, 0.19) !important; }
+    #settingsModal > div { background: #0d1727 !important; color: #e5effc !important; border-color: rgba(139, 177, 224, 0.19) !important; }
+    #settingsModal h2, #settingsModal h3 { color: #f4f7ff !important; }
+    #viewHistory input, #viewSaved input, #viewChat input, #viewChat textarea {
+      background: rgba(12, 21, 36, 0.9) !important;
+      border-color: rgba(139, 177, 224, 0.19) !important;
+      color: #eff5ff !important;
+    }
+    #viewHistory input::placeholder, #viewSaved input::placeholder, #viewChat input::placeholder { color: #778aa4 !important; }
+    #viewHistory .bg-white, #viewSaved .bg-white, #viewChat .bg-white { background: #0d1727 !important; color: #dce8f7 !important; border-color: rgba(139, 177, 224, 0.16) !important; }
+    #viewHistory h1, #viewSaved h1, #viewChat h1, #viewHistory h2, #viewSaved h2, #viewChat h2 { color: #f0f5ff !important; }
+    #mobileMenuBtn { color: #c9d9ec !important; }
+    @media (max-width: 767px) {
+      .md\:hidden.fixed.top-0 { background: rgba(7, 12, 21, 0.94) !important; border-color: rgba(139, 177, 224, 0.16) !important; backdrop-filter: blur(16px); }
+      #mobileNewChatBtn { background: rgba(37, 127, 222, 0.22) !important; color: #91dcff !important; }
+    }
   </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex select-none md:select-auto">
@@ -302,8 +1094,9 @@
       <div class="px-2">
         <div class="flex items-center justify-between mb-2">
           <span class="text-[11px] font-semibold uppercase tracking-wider text-[#72899e]" data-i18n="recent_label">Recent Research</span>
-          <span class="w-2 h-2 rounded-full bg-[#129ec4] animate-pulse" title="Live market feed active"></span>
+          <span class="w-2 h-2 rounded-full bg-[#129ec4]" title="Recent research"></span>
         </div>
+        <div id="sidebarRecentEmpty" class="sidebar-empty-state" data-i18n="recent_empty">Your research runs will appear here.</div>
         <div id="sidebarRecentList" class="space-y-1">
           <!-- Populated dynamically by JS -->
         </div>
@@ -322,7 +1115,7 @@
 
       <div class="my-3 border-t border-[#e2ecf3]"></div>
 
-      <!-- User Profile Pill (Nuradi) -->
+      <!-- Local company profile -->
       <div class="relative">
         <button id="userProfileBtn" class="w-full flex items-center justify-between px-2 py-2 rounded-xl hover:bg-[#e5eff6] transition-all group">
           <div class="flex items-center gap-3">
@@ -330,8 +1123,8 @@
               N
             </div>
             <div class="text-left">
-              <div id="sidebarUserName" class="text-[14px] font-medium text-[#2c4257] leading-tight">Nuradi</div>
-              <div id="sidebarBizTag" class="text-[11px] text-[#6d8499] leading-tight">Pro Strategy Workspace</div>
+              <div id="sidebarUserName" class="text-[14px] font-medium text-[#2c4257] leading-tight" data-i18n="profile_label">Company profile</div>
+              <div id="sidebarBizTag" class="text-[11px] text-[#6d8499] leading-tight">Taraz · building materials yard</div>
             </div>
           </div>
           <svg class="w-4 h-4 text-[#587086] transition-transform group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -342,20 +1135,20 @@
         <!-- Profile Popover Menu -->
         <div id="profileMenuPopover" class="hidden absolute bottom-14 left-0 w-full bg-white/95 backdrop-blur-xl rounded-2xl p-3 shadow-xl border border-[#d8e6ef] z-50 animate-fade-up">
           <div class="px-2 py-1.5 border-b border-[#edf3f8] mb-2">
-            <div class="text-xs font-semibold text-[#0c2033]">Nuradi's Business Profile</div>
-            <div class="text-[11px] text-[#60788e]">Active Preset: <span id="activePresetLabel" class="font-medium text-[#0b7c97]">SaaS & Tech Growth</span></div>
+            <div class="text-xs font-semibold text-[#0c2033]">Company profile</div>
+            <div class="text-[11px] text-[#60788e]">Current company: <span id="activePresetLabel" class="font-medium text-[#0b7c97]">Karatau Materials</span></div>
           </div>
-          <div class="text-[11px] font-semibold uppercase tracking-wider text-[#72899e] px-2 mb-1">Switch Business Context</div>
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-[#72899e] px-2 mb-1">Choose a company profile</div>
           <button data-preset="saas" class="preset-switch-btn w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-[#eaf4f8] text-[#1d3549] flex items-center justify-between">
-            <span>🚀 B2B SaaS / AI Platform</span>
+            <span>Karatau Materials · Taraz</span>
             <span class="text-[#0b7c97] font-bold">✓</span>
           </button>
           <button data-preset="ecom" class="preset-switch-btn w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-[#eaf4f8] text-[#1d3549] flex items-center justify-between">
-            <span>🛍️ D2C E-Commerce Brand</span>
+            <span>Satti Med · Taraz</span>
             <span class="text-[#0b7c97] font-bold opacity-0">✓</span>
           </button>
           <button data-preset="retail" class="preset-switch-btn w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-[#eaf4f8] text-[#1d3549] flex items-center justify-between">
-            <span>☕ Specialty Retail & Cafe</span>
+            <span>Aksu Route Desk · Taraz</span>
             <span class="text-[#0b7c97] font-bold opacity-0">✓</span>
           </button>
         </div>
@@ -380,8 +1173,8 @@
         <!-- Active Business Context Pill (interactive shortcut to configure business) -->
         <button id="topContextPill" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#e7f2f7]/80 hover:bg-white border border-[#d3e4ee] text-xs text-[#395268] transition-all">
           <span class="w-2 h-2 rounded-full bg-[#0b7c97]"></span>
-          <span>Context: <strong id="topContextName" class="font-semibold text-[#0c2033]">Karatau Materials</strong></span>
-          <span class="text-[11px] text-[#0b7c97] underline ml-1">Edit</span>
+          <span><span data-i18n="context_company">Company: </span><strong id="topContextName" class="font-semibold text-[#0c2033]">Karatau Materials</strong></span>
+          <span data-i18n="context_edit" class="text-[11px] text-[#0b7c97] underline ml-1">Edit</span>
         </button>
       </div>
 
@@ -393,7 +1186,7 @@
               <circle cx="12" cy="12" r="9"/>
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a15.3 15.3 0 014 9 15.3 15.3 0 01-4 9 15.3 15.3 0 01-4-9 15.3 15.3 0 014-9z"/>
             </svg>
-            <span id="currentLangCode">EN</span>
+            <span id="currentLangCode">RU</span>
             <svg class="w-3.5 h-3.5 text-[#536b80]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
             </svg>
@@ -403,11 +1196,11 @@
           <div id="langDropdown" class="hidden absolute right-0 mt-2 w-40 bg-white/95 backdrop-blur-xl rounded-2xl p-1.5 shadow-xl border border-[#d6e3ec] z-50 animate-fade-up">
             <button data-lang="EN" class="lang-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[#0c2033] bg-[#eaf4f8]">
               <span>🇬🇧 English (EN)</span>
-              <span class="text-[#0b7c97] font-bold">✓</span>
+              <span class="text-[#0b7c97] font-bold opacity-0">✓</span>
             </button>
             <button data-lang="RU" class="lang-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[#3c5368] hover:bg-[#f1f7fa]">
               <span>🇷🇺 Русский (RU)</span>
-              <span class="text-[#0b7c97] font-bold opacity-0">✓</span>
+              <span class="text-[#0b7c97] font-bold">✓</span>
             </button>
             <button data-lang="KK" class="lang-option w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-[#3c5368] hover:bg-[#f1f7fa]">
               <span>🇰🇿 Қазақша (KK)</span>
@@ -430,7 +1223,7 @@
               <span class="block headline-teal" data-i18n="hero_title_2">Smarter decisions.</span>
             </h1>
             <p class="text-[15.5px] sm:text-[16.5px] text-[#4f6579] leading-[1.6] max-w-[460px] font-normal" data-i18n="hero_subtitle">
-              Tell TrendPilot about your business, and we'll research the market, find opportunities, and give you clear, actionable insights.
+              Set up one company profile, then research public sources for local signals, evidence, and practical next steps.
             </p>
           </div>
 
@@ -452,19 +1245,19 @@
               </div>
               <div class="space-y-3 flex-1">
                 <p class="text-[14px] sm:text-[14.5px] text-[#283f54] leading-[1.6]" data-i18n="greeting_body">
-                  Hi! I'm TrendPilot, your AI business analyst. Describe your business, your customers, and what you're trying to achieve. I'll ask a few follow-up questions to understand your needs better.
+                  TrendPilot researches one company at a time using public sources. Add the company details in Settings, then choose a question or enter your own.
                 </p>
                 <!-- Interactive Quick-Context Tags inside Greeting Card -->
                 <div class="pt-1 flex flex-wrap items-center gap-1.5">
-                  <span class="text-[11px] font-semibold uppercase tracking-wider text-[#647d94] mr-1">Focus:</span>
-                  <button data-focus="Revenue Growth" class="focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/80 text-[#0b7c97] border border-[#bde0eb] shadow-sm transition-all">
-                    ✓ Revenue Growth
+                  <span class="text-[11px] font-semibold uppercase tracking-wider text-[#647d94] mr-1" data-i18n="focus_label">Focus:</span>
+                  <button data-focus="Revenue Growth" aria-pressed="true" class="focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/80 text-[#0b7c97] border border-[#bde0eb] shadow-sm transition-all">
+                    <span class="focus-check">✓</span><span data-i18n="focus_revenue">Revenue growth</span>
                   </button>
-                  <button data-focus="Market Entry" class="focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/50 hover:bg-white text-[#4b6378] border border-transparent hover:border-[#cde0ec] transition-all">
-                    Market Entry
+                  <button data-focus="Market Entry" aria-pressed="false" class="focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/50 hover:bg-white text-[#4b6378] border border-transparent hover:border-[#cde0ec] transition-all">
+                    <span class="focus-check"></span><span data-i18n="focus_market">Market entry</span>
                   </button>
-                  <button data-focus="Margin Optimization" class="focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/50 hover:bg-white text-[#4b6378] border border-transparent hover:border-[#cde0ec] transition-all">
-                    Margin & Pricing
+                  <button data-focus="Margin Optimization" aria-pressed="false" class="focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/50 hover:bg-white text-[#4b6378] border border-transparent hover:border-[#cde0ec] transition-all">
+                    <span class="focus-check"></span><span data-i18n="focus_margin">Margin & pricing</span>
                   </button>
                 </div>
               </div>
@@ -500,6 +1293,53 @@
         <!-- RIGHT COLUMN: Interactive 3D Crystal Compass Orb + Floating Glassmorphic Pillar Nodes -->
         <div class="lg:col-span-6 relative flex flex-col items-center justify-center min-h-[430px] sm:min-h-[500px] select-none" id="orbStageContainer">
 
+          <div class="research-topic-heading">
+            <div>
+              <div class="research-eyebrow" data-i18n="topic_eyebrow">TRENDPILOT RESEARCH</div>
+              <h2 data-i18n="research_topics_title">What do you want to explore?</h2>
+              <p data-i18n="research_topics_subtitle">Choose a lane. TrendPilot will search public sources and show its evidence.</p>
+            </div>
+            <span class="research-source-badge"><span aria-hidden="true">●</span> <span data-i18n="source_badge">Public sources</span></span>
+          </div>
+
+          <div class="signal-scene" id="signalScene" aria-hidden="true">
+            <span class="signal-star signal-star--one"></span>
+            <span class="signal-star signal-star--two"></span>
+            <span class="signal-star signal-star--three"></span>
+            <div class="signal-orbit signal-orbit--wide"></div>
+            <div class="signal-orbit signal-orbit--tilt"></div>
+            <div class="signal-orbit signal-orbit--inner"></div>
+            <div class="signal-core-halo"></div>
+            <svg class="signal-crystal" viewBox="0 0 128 140" fill="none">
+              <defs>
+                <linearGradient id="crystalFaceA" x1="17" y1="9" x2="72" y2="82" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#D6E8FF"/>
+                  <stop offset="1" stop-color="#55DDF5"/>
+                </linearGradient>
+                <linearGradient id="crystalFaceB" x1="64" y1="8" x2="111" y2="104" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#A8B9FF"/>
+                  <stop offset="1" stop-color="#3D6DF2"/>
+                </linearGradient>
+                <linearGradient id="crystalFaceC" x1="28" y1="42" x2="65" y2="136" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#5ACFFF"/>
+                  <stop offset="1" stop-color="#164D9A"/>
+                </linearGradient>
+                <linearGradient id="crystalFaceD" x1="63" y1="47" x2="106" y2="128" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#A67AFF"/>
+                  <stop offset="1" stop-color="#0F5596"/>
+                </linearGradient>
+              </defs>
+              <path d="M64 5 111 39 94 111 64 135 34 111 17 39 64 5Z" fill="#092E49" stroke="#B5FFF7" stroke-opacity=".82" stroke-width="1.4"/>
+              <path d="M64 5 111 39 64 63 17 39 64 5Z" fill="url(#crystalFaceA)" fill-opacity=".95"/>
+              <path d="M17 39 64 63 34 111 17 39Z" fill="url(#crystalFaceB)" fill-opacity=".86"/>
+              <path d="M111 39 64 63 94 111 111 39Z" fill="#697DFF" fill-opacity=".72"/>
+              <path d="M34 111 64 63 64 135 34 111Z" fill="url(#crystalFaceC)"/>
+              <path d="M94 111 64 63 64 135 94 111Z" fill="url(#crystalFaceD)"/>
+              <path d="M64 5V63M17 39 64 63 111 39M34 111 64 63 94 111M64 63V135" stroke="#E3F2FF" stroke-opacity=".62" stroke-width="1"/>
+              <circle cx="64" cy="63" r="3" fill="#F1F6FF"/>
+            </svg>
+          </div>
+
           <!-- Ambient cyan radial glow behind the orb -->
           <div class="orb-glow-backdrop absolute w-[360px] h-[360px] rounded-full bg-gradient-to-tr from-[#bcebf7]/40 via-[#d8f3fa]/30 to-transparent blur-2xl pointer-events-none"></div>
 
@@ -515,57 +1355,65 @@
             <!-- Interactive Floating Pill 1: Market research (Top) -->
             <button
               data-pillar="market"
+              data-i18n-title="pill_title_market"
               class="orb-pill float-anim-1 absolute top-[3%] left-[27%] sm:left-[30%] px-4 py-2.5 rounded-full flex items-center gap-2.5 cursor-pointer group z-20"
-              title="Click to inspect live Market Research metrics"
+              title="Preview a source-backed market research question"
             >
               <span class="w-7 h-7 rounded-full bg-[#e3f3f8] flex items-center justify-center text-[#0b7c97] group-hover:bg-[#0b7c97] group-hover:text-white transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 19h16M7 16V9m5 7V5m5 11v-6"/>
                 </svg>
               </span>
-              <span class="text-[14px] font-semibold text-[#0f2940] pr-1" data-i18n="pill_market">Market research</span>
+              <span class="topic-title" data-i18n="pill_market">Market research</span>
+              <span class="topic-description" data-i18n="topic_desc_market">Local demand and market signals</span>
             </button>
 
             <!-- Interactive Floating Pill 2: Competitors (Right) -->
             <button
               data-pillar="competitors"
+              data-i18n-title="pill_title_competitors"
               class="orb-pill float-anim-2 absolute top-[21%] right-[1%] sm:right-[3%] px-4 py-2.5 rounded-full flex items-center gap-2.5 cursor-pointer group z-20"
-              title="Click to inspect Competitor Intelligence"
+              title="Preview a source-backed competitor research question"
             >
               <span class="w-7 h-7 rounded-full bg-[#e3f3f8] flex items-center justify-center text-[#0b7c97] group-hover:bg-[#0b7c97] group-hover:text-white transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
               </span>
-              <span class="text-[14px] font-semibold text-[#0f2940] pr-1" data-i18n="pill_competitors">Competitors</span>
+              <span class="topic-title" data-i18n="pill_competitors">Competitors</span>
+              <span class="topic-description" data-i18n="topic_desc_competitors">Public pages, listings, and positioning</span>
             </button>
 
             <!-- Interactive Floating Pill 3: Opportunities (Left) -->
             <button
               data-pillar="opportunities"
+              data-i18n-title="pill_title_opportunities"
               class="orb-pill float-anim-3 absolute top-[44%] left-[0%] sm:left-[2%] px-4 py-2.5 rounded-full flex items-center gap-2.5 cursor-pointer group z-20"
-              title="Click to explore high-ROI Market Opportunities"
+              title="Preview an evidence-based opportunity question"
             >
               <span class="w-7 h-7 rounded-full bg-[#e3f3f8] flex items-center justify-center text-[#0b7c97] group-hover:bg-[#0b7c97] group-hover:text-white transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                 </svg>
               </span>
-              <span class="text-[14px] font-semibold text-[#0f2940] pr-1" data-i18n="pill_opportunities">Opportunities</span>
+              <span class="topic-title" data-i18n="pill_opportunities">Opportunities</span>
+              <span class="topic-description" data-i18n="topic_desc_opportunities">Small tests grounded in local evidence</span>
             </button>
 
             <!-- Interactive Floating Pill 4: Risks (Bottom Right) -->
             <button
               data-pillar="risks"
+              data-i18n-title="pill_title_risks"
               class="orb-pill float-anim-4 absolute bottom-[16%] right-[6%] sm:right-[9%] px-4 py-2.5 rounded-full flex items-center gap-2.5 cursor-pointer group z-20"
-              title="Click to inspect Market & Operational Risks"
+              title="Preview a source-backed risk research question"
             >
               <span class="w-7 h-7 rounded-full bg-[#e3f3f8] flex items-center justify-center text-[#0b7c97] group-hover:bg-[#0b7c97] group-hover:text-white transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
               </span>
-              <span class="text-[14px] font-semibold text-[#0f2940] pr-1" data-i18n="pill_risks">Risks</span>
+              <span class="topic-title" data-i18n="pill_risks">Risks</span>
+              <span class="topic-description" data-i18n="topic_desc_risks">Changes that could affect your business</span>
             </button>
           </div>
 
@@ -575,8 +1423,8 @@
               <div class="flex items-center gap-2.5">
                 <span id="inspectorBadgeIcon" class="w-7 h-7 rounded-lg bg-[#dff1f6] text-[#0b7c97] flex items-center justify-center font-bold text-sm">📊</span>
                 <div>
-                  <h3 id="inspectorTitle" class="text-sm font-bold text-[#0c2033]">Market Research Pulse</h3>
-                  <p id="inspectorSubtitle" class="text-[11px] text-[#5e768b]">Real-time sector benchmark & growth signals</p>
+                  <h3 id="inspectorTitle" class="text-sm font-bold text-[#0c2033]">Market research preview</h3>
+                  <p id="inspectorSubtitle" class="text-[11px] text-[#5e768b]">A live search will show local evidence here</p>
                 </div>
               </div>
               <button id="closeInspectorBtn" class="p-1 rounded-lg text-[#6a8094] hover:text-[#0c2033] hover:bg-[#f0f6fa]">
@@ -589,9 +1437,9 @@
               <!-- Populated dynamically -->
             </div>
             <div class="flex items-center justify-between pt-1">
-              <span id="inspectorTakeaway" class="text-xs text-[#3b5368] truncate pr-2">Strongest tailwind: AI workflow automation (+34% YoY)</span>
+              <span id="inspectorTakeaway" class="text-xs text-[#3b5368] truncate pr-2">Run a live search to see source-backed findings.</span>
               <button id="inspectorLaunchChatBtn" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-[#0b7c97] hover:bg-[#08637a] text-white text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
-                <span>Run Deep Dive</span>
+                <span data-i18n="inspector_cta">Start research</span>
                 <span>→</span>
               </button>
             </div>
@@ -600,7 +1448,7 @@
           <!-- Subtle interactive hint below orb -->
           <div class="text-[11.5px] text-[#6d859a] flex items-center gap-1.5 -mt-2">
             <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#129ec4]"></span>
-            <span data-i18n="orb_hint">Click any floating node around the compass orb to preview live intelligence</span>
+            <span data-i18n="orb_hint">Choose a topic to start research using public sources</span>
           </div>
         </div>
 
@@ -675,7 +1523,7 @@
     </section>
 
     <!-- FLOATING BOTTOM PROMPT BAR (Matches the exact rounded pill input at bottom of brief) -->
-    <div class="fixed md:absolute bottom-5 left-0 right-0 px-4 sm:px-8 md:px-14 z-30 pointer-events-none">
+    <div id="promptDock" class="fixed md:absolute bottom-5 left-0 right-0 px-4 sm:px-8 md:px-14 z-30 pointer-events-none">
       <div class="max-w-[780px] mx-auto lg:ml-[40px] xl:ml-[72px] pointer-events-auto">
 
         <!-- Attached file chips / Voice status banner (if active) -->
@@ -683,8 +1531,8 @@
           <!-- Dynamic attached file pills appear here -->
         </div>
 
-        <!-- Attachment Popover Menu -->
-        <div id="attachPopover" class="hidden mb-2 w-72 bg-white/95 backdrop-blur-xl rounded-2xl p-2.5 shadow-xl border border-[#d4e3ee] animate-fade-up">
+        <!-- Hidden: file names are not sent to the research agent. -->
+        <div id="attachPopover" class="hidden mb-2 w-72 bg-white/95 backdrop-blur-xl rounded-2xl p-2.5 shadow-xl border border-[#d4e3ee] animate-fade-up" hidden>
           <div class="text-[11px] font-semibold uppercase tracking-wider text-[#698096] px-2 py-1">Attach Business Context</div>
           <button data-attach="Q3_Financial_Metrics.csv" class="attach-sample-item w-full text-left px-2.5 py-2 rounded-xl hover:bg-[#eaf4f8] flex items-center gap-2.5 text-xs text-[#1c354b]">
             <span class="w-6 h-6 rounded-lg bg-[#dff1f6] text-[#0b7c97] flex items-center justify-center font-bold">📊</span>
@@ -711,11 +1559,13 @@
 
         <!-- Main Pill Bar -->
         <form id="promptForm" class="prompt-input-bar rounded-full px-3.5 py-2.5 flex items-center gap-3">
-          <!-- Paperclip Attachment Icon -->
+          <!-- Hidden until a file's contents are actually sent with the research request. -->
           <button
             type="button"
             id="attachBtn"
-            class="p-2 rounded-full text-[#536b80] hover:text-[#0b7c97] hover:bg-[#eaf4f8] transition-colors shrink-0"
+            class="hidden p-2 rounded-full text-[#536b80] hover:text-[#0b7c97] hover:bg-[#eaf4f8] transition-colors shrink-0"
+            hidden
+            aria-hidden="true"
             title="Attach business data or document"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
@@ -729,7 +1579,7 @@
             type="text"
             autocomplete="off"
             data-i18n-placeholder="input_placeholder"
-            placeholder="Describe your business or ask a question..."
+            placeholder="Ask about your business..."
             class="flex-1 bg-transparent text-[14.5px] text-[#0c2033] placeholder-[#788fa3] focus:outline-none"
           />
 
@@ -742,11 +1592,13 @@
             <span class="ml-1">Listening...</span>
           </div>
 
-          <!-- Microphone Button -->
+          <!-- Hidden: this is not speech recognition, only a canned prompt. -->
           <button
             type="button"
             id="micBtn"
-            class="p-2 rounded-full text-[#536b80] hover:text-[#0b7c97] hover:bg-[#eaf4f8] transition-colors shrink-0"
+            class="hidden p-2 rounded-full text-[#536b80] hover:text-[#0b7c97] hover:bg-[#eaf4f8] transition-colors shrink-0"
+            hidden
+            aria-hidden="true"
             title="Voice input"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
@@ -787,18 +1639,17 @@
 
       <div class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-[#2c4459] mb-1">Your Business / Brand Name</label>
+          <label class="block text-xs font-semibold text-[#2c4459] mb-1">Company name</label>
           <input id="settingBizName" type="text" value="Karatau Materials" class="w-full px-3.5 py-2 rounded-xl border border-[#cde0ec] text-sm text-[#0c2033] focus:outline-none focus:border-[#0b7c97]" />
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-[#2c4459] mb-1">Primary Sector</label>
+            <label class="block text-xs font-semibold text-[#2c4459] mb-1">Industry</label>
             <select id="settingSector" class="w-full px-3 py-2 rounded-xl border border-[#cde0ec] text-xs font-medium text-[#0c2033] bg-white focus:outline-none focus:border-[#0b7c97]">
-              <option value="B2B SaaS Growth">B2B SaaS & AI</option>
-              <option value="D2C E-Commerce">D2C E-Commerce</option>
-              <option value="Fintech & Payments">Fintech & Payments</option>
-              <option value="Specialty Retail">Specialty Retail & Cafe</option>
+              <option value="building materials yard">Building materials yard</option>
+              <option value="private outpatient clinic">Private outpatient clinic</option>
+              <option value="small tour desk">Small tour desk</option>
             </select>
           </div>
           <div>
@@ -848,11 +1699,19 @@
         nav_saved: "Saved insights",
         nav_settings: "Settings",
         recent_label: "Recent Research",
+        recent_empty: "Your research runs will appear here.",
+        profile_label: "Company profile",
+        focus_label: "FOCUS",
+        focus_revenue: "Revenue growth",
+        focus_market: "Market entry",
+        focus_margin: "Margin & pricing",
         back_overview: "Overview",
+        context_company: "Company: ",
+        context_edit: "Edit",
         hero_title_1: "Your business.",
         hero_title_2: "Smarter decisions.",
-        hero_subtitle: "Tell TrendPilot about your business, and we'll research the market, find opportunities, and give you clear, actionable insights.",
-        greeting_body: "Hi! I'm TrendPilot, your AI business analyst. Describe your business, your customers, and what you're trying to achieve. I'll ask a few follow-up questions to understand your needs better.",
+        hero_subtitle: "Set up one company profile, then research public sources for local signals, evidence, and practical next steps.",
+        greeting_body: "Choose a focus, then select a topic or ask your own question.",
         try_sample: "TRY A SAMPLE PROMPT",
         prompt_1: "Analyze my competitors",
         prompt_2: "Find market opportunities",
@@ -862,8 +1721,23 @@
         pill_competitors: "Competitors",
         pill_opportunities: "Opportunities",
         pill_risks: "Risks",
-        orb_hint: "Click any floating node around the compass orb to preview live intelligence",
-        input_placeholder: "Describe your business or ask a question..."
+        orb_hint: "Choose a topic to start research using public sources",
+        pill_title_market: "Preview a source-backed market research question",
+        pill_title_competitors: "Preview a source-backed competitor research question",
+        pill_title_opportunities: "Preview a source-backed opportunity question",
+        pill_title_risks: "Preview a source-backed risk research question",
+        topic_eyebrow: "TRENDPILOT RESEARCH",
+        source_badge: "Public sources",
+        research_topics_title: "What do you want to explore?",
+        research_topics_subtitle: "Choose a lane. TrendPilot will search public sources and show its evidence.",
+        topic_desc_market: "Local demand and market signals",
+        topic_desc_competitors: "Public pages, listings, and positioning",
+        topic_desc_opportunities: "Small tests grounded in local evidence",
+        topic_desc_risks: "Changes that could affect your business",
+        inspector_preview: "Research preview",
+        inspector_no_findings: "No findings yet",
+        inspector_cta: "Start research",
+        input_placeholder: "Ask about your business..."
       },
       RU: {
         nav_new_chat: "Новый чат",
@@ -871,11 +1745,19 @@
         nav_saved: "Сохраненные инсайты",
         nav_settings: "Настройки",
         recent_label: "Недавние сессии",
+        recent_empty: "Здесь появятся ваши исследования.",
+        profile_label: "Профиль компании",
+        focus_label: "ФОКУС",
+        focus_revenue: "Рост выручки",
+        focus_market: "Выход на рынок",
+        focus_margin: "Маржа и цены",
         back_overview: "На главную",
+        context_company: "Компания: ",
+        context_edit: "Изменить",
         hero_title_1: "Ваш бизнес.",
         hero_title_2: "Умные решения.",
-        hero_subtitle: "Расскажите TrendPilot о своем бизнесе — мы изучим рынок, найдем точки роста и дадим четкие практические рекомендации.",
-        greeting_body: "Привет! Я TrendPilot, ваш ИИ бизнес-аналитик. Опишите ваш бизнес, клиентов и цели. Я задам несколько уточняющих вопросов, чтобы лучше понять ваши задачи.",
+        hero_subtitle: "Настройте профиль одной компании, чтобы изучать открытые источники, местные сигналы и практические следующие шаги.",
+        greeting_body: "Выберите фокус, затем тему или задайте свой вопрос.",
         try_sample: "ПОПРОБУЙТЕ ПРИМЕР ЗАПРОСА",
         prompt_1: "Проанализируй моих конкурентов",
         prompt_2: "Найди рыночные возможности",
@@ -885,8 +1767,23 @@
         pill_competitors: "Конкуренты",
         pill_opportunities: "Возможности",
         pill_risks: "Риски",
-        orb_hint: "Нажмите на любую сферу вокруг компаса для быстрого обзора метрик",
-        input_placeholder: "Опишите ваш бизнес или задайте вопрос..."
+        orb_hint: "Выберите тему, чтобы начать исследование по открытым источникам",
+        pill_title_market: "Предпросмотр исследования рынка по открытым источникам",
+        pill_title_competitors: "Предпросмотр исследования конкурентов по открытым источникам",
+        pill_title_opportunities: "Предпросмотр поиска возможностей по открытым источникам",
+        pill_title_risks: "Предпросмотр исследования рисков по открытым источникам",
+        topic_eyebrow: "ИССЛЕДОВАНИЕ TRENDPILOT",
+        source_badge: "Открытые источники",
+        research_topics_title: "Что хотите изучить?",
+        research_topics_subtitle: "Выберите направление. TrendPilot изучит открытые источники и покажет доказательства.",
+        topic_desc_market: "Местный спрос и сигналы рынка",
+        topic_desc_competitors: "Открытые страницы, каталоги и позиционирование",
+        topic_desc_opportunities: "Небольшие тесты на основе местных данных",
+        topic_desc_risks: "Изменения, которые могут повлиять на бизнес",
+        inspector_preview: "Предпросмотр исследования",
+        inspector_no_findings: "Пока нет результатов",
+        inspector_cta: "Начать исследование",
+        input_placeholder: "Вопрос о вашем бизнесе..."
       },
       KK: {
         nav_new_chat: "Жаңа чат",
@@ -894,11 +1791,19 @@
         nav_saved: "Сақталған инсайттар",
         nav_settings: "Баптаулар",
         recent_label: "Соңғы талдаулар",
+        recent_empty: "Зерттеулеріңіз осында көрсетіледі.",
+        profile_label: "Компания профилі",
+        focus_label: "БАҒЫТ",
+        focus_revenue: "Түсімді өсіру",
+        focus_market: "Нарыққа шығу",
+        focus_margin: "Маржа мен баға",
         back_overview: "Басты бетке",
+        context_company: "Компания: ",
+        context_edit: "Өңдеу",
         hero_title_1: "Сіздің бизнесіңіз.",
         hero_title_2: "Ақылды шешімдер.",
-        hero_subtitle: "TrendPilot-қа бизнесіңіз туралы айтып беріңіз — біз нарықты зерттеп, мүмкіндіктерді тауып, нақты ұсыныстар береміз.",
-        greeting_body: "Сәлем! Мен TrendPilot — сіздің ЖИ бизнес-талдаушыңызбын. Бизнесіңізді, клиенттеріңізді және мақсаттарыңызды сипаттаңыз. Қажеттіліктеріңізді тереңірек түсіну үшін бірнеше сұрақ қоямын.",
+        hero_subtitle: "Бір компанияның профилін баптап, ашық дереккөздерден жергілікті белгілерді, дәлелдер мен нақты келесі қадамдарды зерттеңіз.",
+        greeting_body: "Бағытты таңдап, тақырыпты белгілеңіз немесе өз сұрағыңызды қойыңыз.",
         try_sample: "ҮЛГІ СҰРАНЫСТЫ ТАҢДАҢЫЗ",
         prompt_1: "Бәсекелестерімді талдау",
         prompt_2: "Нарықтық мүмкіндіктерді табу",
@@ -908,14 +1813,29 @@
         pill_competitors: "Бәсекелестер",
         pill_opportunities: "Мүмкіндіктер",
         pill_risks: "Тәуекелдер",
-        orb_hint: "Жедел деректерді көру үшін компас айналасындағы түймелерді басыңыз",
-        input_placeholder: "Бизнесіңізді сипаттаңыз немесе сұрақ қойыңыз..."
+        orb_hint: "Ашық дереккөздер арқылы зерттеуді бастау үшін тақырыпты таңдаңыз",
+        pill_title_market: "Ашық дереккөздер бойынша нарықты зерттеуді алдын ала қарау",
+        pill_title_competitors: "Ашық дереккөздер бойынша бәсекелестерді зерттеуді алдын ала қарау",
+        pill_title_opportunities: "Ашық дереккөздерден мүмкіндіктерді іздеуді алдын ала қарау",
+        pill_title_risks: "Ашық дереккөздер бойынша тәуекелдерді зерттеуді алдын ала қарау",
+        topic_eyebrow: "TRENDPILOT ЗЕРТТЕУІ",
+        source_badge: "Ашық дереккөздер",
+        research_topics_title: "Нені зерттегіңіз келеді?",
+        research_topics_subtitle: "Бағытты таңдаңыз. TrendPilot ашық дереккөздерді қарап, дәлелдерді көрсетеді.",
+        topic_desc_market: "Жергілікті сұраныс пен нарық белгілері",
+        topic_desc_competitors: "Ашық беттер, тізімдер және позициялау",
+        topic_desc_opportunities: "Жергілікті деректерге негізделген шағын сынақтар",
+        topic_desc_risks: "Бизнеске әсер етуі мүмкін өзгерістер",
+        inspector_preview: "Зерттеу нұсқасы",
+        inspector_no_findings: "Әзірге нәтиже жоқ",
+        inspector_cta: "Зерттеуді бастау",
+        input_placeholder: "Бизнесіңіз туралы сұрақ..."
       }
     };
 
     // --- STATE MANAGEMENT ---
     const state = {
-      lang: "EN",
+      lang: "RU",
       currentView: "hero", // 'hero' | 'chat' | 'history' | 'saved'
       bizName: "Karatau Materials",
       sector: "building materials yard",
@@ -997,51 +1917,31 @@
     const PILLAR_DATA = {
       market: {
         icon: "📊",
-        title: "Market Research & Demand Pulse",
-        subtitle: "Live sector sizing, buyer velocity & macro growth signals",
+        title: { EN: "Market research", RU: "Исследование рынка", KK: "Нарықты зерттеу" },
+        subtitle: { EN: "Search public sources for local demand signals.", RU: "Ищите местные сигналы спроса в открытых источниках.", KK: "Ашық дереккөздерден жергілікті сұраныс белгілерін іздеңіз." },
         promptKey: "demand",
-        takeaway: "Strongest tailwind: AI workflow & decision automation (+34% YoY)",
-        metrics: [
-          { label: "Addressable TAM", val: "$14.8B", delta: "+26.4% YoY" },
-          { label: "Buyer Search Velocity", val: "92 / 100", delta: "High Intent" },
-          { label: "Avg Deal Cycle", val: "24 Days", delta: "-6 days faster" }
-        ]
+        takeaway: { EN: "Market figures appear only when a research run finds public evidence.", RU: "Рыночные показатели появятся только при наличии подтверждений в открытых источниках.", KK: "Нарық көрсеткіштері зерттеу ашық дереккөздерден дәлел тапқанда ғана көрсетіледі." }
       },
       competitors: {
         icon: "👥",
-        title: "Competitor Landscape & Moats",
-        subtitle: "Direct rivals, feature gaps & pricing positioning",
+        title: { EN: "Competitors", RU: "Конкуренты", KK: "Бәсекелестер" },
+        subtitle: { EN: "Review public competitor pages and listings.", RU: "Изучайте открытые страницы и каталоги конкурентов.", KK: "Бәсекелестердің ашық беттері мен тізімдерін қараңыз." },
         promptKey: "competitors",
-        takeaway: "Key gap: Incumbents overcharge for mid-tier analytics seats",
-        metrics: [
-          { label: "Direct Rivals", val: "4 Tracked", delta: "2 Aggressive" },
-          { label: "Category Avg Price", val: "$115/mo", delta: "You: -22% leaner" },
-          { label: "Win-Rate Opportunity", val: "64%", delta: "Mid-Market" }
-        ]
+        takeaway: { EN: "Findings link to sources and identify missing evidence.", RU: "Результаты содержат ссылки на источники и отмечают, каких доказательств не хватает.", KK: "Нәтижелер дереккөздерге сілтеме жасап, жетіспейтін дәлелдерді көрсетеді." }
       },
       opportunities: {
         icon: "💡",
-        title: "High-ROI Growth Opportunities",
-        subtitle: "Underserved customer segments & expansion levers",
+        title: { EN: "Opportunities", RU: "Возможности", KK: "Мүмкіндіктер" },
+        subtitle: { EN: "Look for local changes that could support a small test.", RU: "Ищите местные изменения, которые можно проверить небольшим экспериментом.", KK: "Шағын сынақпен тексеруге болатын жергілікті өзгерістерді іздеңіз." },
         promptKey: "opportunities",
-        takeaway: "Top play: Vertical AI templates for agency & ops teams",
-        metrics: [
-          { label: "Untapped SAM", val: "$420M", delta: "Low Saturation" },
-          { label: "Est. ARR Uplift", val: "+31.5%", delta: "Within 2 Qtrs" },
-          { label: "Implementation Effort", val: "Low-Med", delta: "4 Wks Launch" }
-        ]
+        takeaway: { EN: "Suggestions are checked against the company’s offer and constraints.", RU: "Идеи сопоставляются с предложением компании и её ограничениями.", KK: "Ұсыныстар компанияның ұсынысы мен шектеулеріне сай тексеріледі." }
       },
       risks: {
         icon: "🛡️",
-        title: "Risk Radar & Margin Safeguards",
-        subtitle: "Churn triggers, CAC pressure & competitive threats",
+        title: { EN: "Risks", RU: "Риски", KK: "Тәуекелдер" },
+        subtitle: { EN: "Check public changes that could affect current operations.", RU: "Проверяйте открытые данные об изменениях, влияющих на текущую работу.", KK: "Ағымдағы жұмысқа әсер етуі мүмкін ашық деректерді тексеріңіз." },
         promptKey: "risks",
-        takeaway: "Watchlist: Month-2 activation drop-off on unguided accounts",
-        metrics: [
-          { label: "Overall Risk Score", val: "Low (28)", delta: "-7 pts vs Q2" },
-          { label: "Churn Sensitivity", val: "3.1%/mo", delta: "Target <2.5%" },
-          { label: "Paid CAC Pressure", val: "+18% YoY", delta: "Mitigation ready" }
-        ]
+        takeaway: { EN: "Weak or non-local evidence is not presented as a recommendation.", RU: "Слабые или не местные данные не выдаются за рекомендацию.", KK: "Әлсіз немесе жергілікті емес деректер ұсыныс ретінде берілмейді." }
       }
     };
 
@@ -1318,6 +2218,7 @@
     // --- LANGUAGE SWITCHING ---
     function applyLanguage(langCode) {
       state.lang = langCode;
+      document.documentElement.lang = langCode === "RU" ? "ru" : langCode === "KK" ? "kk" : "en";
       const dict = I18N[langCode] || I18N.EN;
       document.getElementById("currentLangCode").textContent = langCode;
 
@@ -1329,6 +2230,11 @@
       document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
         const key = el.getAttribute("data-i18n-placeholder");
         if (dict[key]) el.setAttribute("placeholder", dict[key]);
+      });
+
+      document.querySelectorAll("[data-i18n-title]").forEach(el => {
+        const key = el.getAttribute("data-i18n-title");
+        if (dict[key]) el.setAttribute("title", dict[key]);
       });
 
       document.querySelectorAll(".lang-option").forEach(btn => {
@@ -1345,6 +2251,9 @@
       state.activeOrbPillar = pillarKey;
       const data = PILLAR_DATA[pillarKey];
       if (!data) return;
+      const language = state.lang || "RU";
+      const copy = I18N[language] || I18N.EN;
+      const localize = value => typeof value === "string" ? value : (value[language] || value.EN);
 
       document.querySelectorAll(".orb-pill").forEach(pill => {
         pill.classList.toggle("active-pill", pill.dataset.pillar === pillarKey);
@@ -1352,18 +2261,17 @@
 
       const card = document.getElementById("orbInspectorCard");
       document.getElementById("inspectorBadgeIcon").textContent = data.icon;
-      document.getElementById("inspectorTitle").textContent = data.title;
-      document.getElementById("inspectorSubtitle").textContent = data.subtitle;
-      document.getElementById("inspectorTakeaway").textContent = data.takeaway;
+      document.getElementById("inspectorTitle").textContent = localize(data.title);
+      document.getElementById("inspectorSubtitle").textContent = localize(data.subtitle);
+      document.getElementById("inspectorTakeaway").textContent = localize(data.takeaway);
 
       const grid = document.getElementById("inspectorMetricsGrid");
-      grid.innerHTML = data.metrics.map(m => `
-        <div class="bg-[#f3f9fc] rounded-xl p-2.5 border border-[#dfedf5]">
-          <div class="text-[10.5px] font-medium text-[#60788e]">${m.label}</div>
-          <div class="text-sm font-bold text-[#0c2033] mt-0.5">${m.val}</div>
-          <div class="text-[10.5px] font-semibold text-[#0b7c97] mt-0.5">${m.delta}</div>
-        </div>
-      `).join("");
+      grid.innerHTML = `
+        <div class="col-span-3 bg-[#f3f9fc] rounded-xl p-3 border border-[#dfedf5]">
+          <div class="text-[10.5px] font-semibold uppercase tracking-wide text-[#60788e]">${copy.inspector_preview}</div>
+          <div class="text-sm font-semibold text-[#0c2033] mt-1">${copy.inspector_no_findings}</div>
+          <div class="text-xs text-[#60788e] mt-1">${localize(data.takeaway)}</div>
+        </div>`;
 
       const launchBtn = document.getElementById("inspectorLaunchChatBtn");
       launchBtn.onclick = () => {
@@ -1371,6 +2279,7 @@
       };
 
       card.classList.remove("hidden");
+      requestAnimationFrame(() => card.scrollIntoView({ behavior: "smooth", block: "center" }));
     }
 
     // --- LAUNCH AI ANALYST CONVERSATION & CHARTS ---
@@ -1928,6 +2837,7 @@
 
     // --- INITIALIZE EVENT LISTENERS ---
     window.addEventListener("DOMContentLoaded", () => {
+      applyLanguage(state.lang);
       updateBadges();
 
       // Sidebar & Header Navigation
@@ -1955,9 +2865,10 @@
             c.className = active
               ? "focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/90 text-[#0b7c97] border border-[#bde0eb] shadow-sm transition-all"
               : "focus-chip px-2.5 py-1 rounded-lg text-[11.5px] font-medium bg-white/50 hover:bg-white text-[#4b6378] border border-transparent hover:border-[#cde0ec] transition-all";
-            c.textContent = (active ? "✓ " : "") + c.dataset.focus;
+            c.setAttribute("aria-pressed", String(active));
+            const check = c.querySelector(".focus-check");
+            if (check) check.textContent = active ? "✓" : "";
           });
-          showToast(`Analyst focus set to: ${state.focusArea}`);
         });
       });
 
@@ -1980,18 +2891,42 @@
         document.querySelectorAll(".orb-pill").forEach(p => p.classList.remove("active-pill"));
       });
 
-      // Subtle 3D Mouse Parallax on the Crystal Orb Stage
-      const orbStage = document.getElementById("orbStageContainer");
-      const orbLayer = document.getElementById("orbParallaxLayer");
-      if (orbStage && orbLayer) {
-        orbStage.addEventListener("mousemove", (e) => {
-          const rect = orbStage.getBoundingClientRect();
-          const relX = (e.clientX - rect.left) / rect.width - 0.5;
-          const relY = (e.clientY - rect.top) / rect.height - 0.5;
-          orbLayer.style.transform = `translate3d(${relX * 14}px, ${relY * 14}px, 0)`;
+      // Interactive 3D signal compass and pointer-reactive research cards.
+      const signalScene = document.getElementById("signalScene");
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (signalScene && !reduceMotion) {
+        signalScene.addEventListener("pointermove", (e) => {
+          if (e.pointerType === "touch") return;
+          const rect = signalScene.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width;
+          const y = (e.clientY - rect.top) / rect.height;
+          const tiltX = (0.5 - y) * 8;
+          const tiltY = (x - 0.5) * 11;
+          signalScene.style.setProperty("--glare-x", `${(x * 100).toFixed(1)}%`);
+          signalScene.style.setProperty("--glare-y", `${(y * 100).toFixed(1)}%`);
+          signalScene.style.transform = `perspective(950px) rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
         });
-        orbStage.addEventListener("mouseleave", () => {
-          orbLayer.style.transform = "translate3d(0, 0, 0)";
+        signalScene.addEventListener("pointerleave", () => {
+          signalScene.style.transform = "perspective(950px) rotateX(0deg) rotateY(0deg)";
+          signalScene.style.setProperty("--glare-x", "50%");
+          signalScene.style.setProperty("--glare-y", "50%");
+        });
+
+        document.querySelectorAll(".orb-pill").forEach((card) => {
+          card.addEventListener("pointermove", (e) => {
+            if (e.pointerType === "touch") return;
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+            card.style.setProperty("--tilt-x", `${((0.5 - y) * 9).toFixed(2)}deg`);
+            card.style.setProperty("--tilt-y", `${((x - 0.5) * 11).toFixed(2)}deg`);
+            card.style.setProperty("--shine-x", `${(x * 100).toFixed(1)}%`);
+            card.style.setProperty("--shine-y", `${(y * 100).toFixed(1)}%`);
+          });
+          card.addEventListener("pointerleave", () => {
+            card.style.setProperty("--tilt-x", "0deg");
+            card.style.setProperty("--tilt-y", "0deg");
+          });
         });
       }
 
@@ -2010,10 +2945,10 @@
         launchAnalysisSession(queryText, queryText);
       });
 
-      // Attachment Button & Popover
+      // Attachment and microphone are hidden: neither sends real input to research.
       const attachBtn = document.getElementById("attachBtn");
       const attachPopover = document.getElementById("attachPopover");
-      attachBtn.addEventListener("click", (e) => {
+      if (attachBtn && !attachBtn.hidden) attachBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         attachPopover.classList.toggle("hidden");
       });
@@ -2042,7 +2977,7 @@
       const micBtn = document.getElementById("micBtn");
       const voiceWave = document.getElementById("voiceWaveform");
       let voiceActive = false;
-      micBtn.addEventListener("click", () => {
+      if (micBtn && !micBtn.hidden) micBtn.addEventListener("click", () => {
         voiceActive = !voiceActive;
         if (voiceActive) {
           voiceWave.classList.remove("hidden");
@@ -2077,7 +3012,6 @@
         opt.addEventListener("click", () => {
           applyLanguage(opt.dataset.lang);
           langDropdown.classList.add("hidden");
-          showToast(`Language switched to ${opt.dataset.lang}`);
         });
       });
 
@@ -2092,9 +3026,9 @@
         btn.addEventListener("click", () => {
           const preset = btn.dataset.preset;
           const map = {
-            saas: { name: "NovaFlow AI", sector: "B2B SaaS Growth", label: "SaaS & Tech Growth" },
-            ecom: { name: "Lumina Botanics", sector: "D2C E-Commerce", label: "D2C E-Commerce" },
-            retail: { name: "Roast & Co. Cafe", sector: "Specialty Retail", label: "Specialty Retail" }
+            saas: { name: "Karatau Materials", sector: "building materials yard", label: "Materials yard" },
+            ecom: { name: "Satti Med", sector: "private outpatient clinic", label: "Clinic" },
+            retail: { name: "Aksu Route Desk", sector: "small tour desk", label: "Tour desk" }
           };
           const chosen = map[preset] || map.saas;
           state.bizName = chosen.name;
@@ -2131,12 +3065,12 @@
       });
 
       document.getElementById("saveSettingsBtn").addEventListener("click", () => {
-        state.bizName = document.getElementById("settingBizName").value.trim() || "NovaFlow AI";
+        state.bizName = document.getElementById("settingBizName").value.trim() || "Karatau Materials";
         state.sector = document.getElementById("settingSector").value;
         state.currency = document.getElementById("settingCurrency").value;
-        document.getElementById("topContextName").textContent = `${state.bizName} (${state.sector})`;
+        document.getElementById("topContextName").textContent = state.bizName;
         closeSettings();
-        showToast(`Updated workspace settings for ${state.bizName}`);
+        showToast(`Updated company profile for ${state.bizName}`);
       });
 
       // History search filter

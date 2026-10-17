@@ -1,4 +1,4 @@
-"""Local UI and research API. The page is the downloaded TrendPilot design."""
+"""Serve the local TrendPilot UI and research API."""
 
 from __future__ import annotations
 
@@ -16,10 +16,12 @@ FILES = {
     "/": UI / "index.html",
     "/index.html": UI / "index.html",
     "/live.js": UI / "live.js",
+    "/favicon.svg": UI / "favicon.svg",
 }
 TYPES = {
     ".html": "text/html; charset=utf-8",
     ".js": "text/javascript; charset=utf-8",
+    ".svg": "image/svg+xml",
 }
 
 
@@ -58,6 +60,9 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length) or b"{}")
         except json.JSONDecodeError:
             self._json(400, {"error": "body must be JSON"})
+            return
+        if not isinstance(body, dict):
+            self._json(400, {"error": "body must be a JSON object"})
             return
         company = body.get("company")
         if not isinstance(company, dict):

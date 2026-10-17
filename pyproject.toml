@@ -1,7 +1,7 @@
 [project]
 name = "trendpilot"
 version = "0.1.0"
-description = "Live research agent for local companies in Taraz"
+description = "Local research agent for one company at a time"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

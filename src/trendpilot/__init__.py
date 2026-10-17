@@ -1,4 +1,4 @@
-"""TrendPilot research agent. UI is intentionally not in this repo."""
+"""TrendPilot's local company research agent and UI entry point."""
 
 from trendpilot.agent import run
 

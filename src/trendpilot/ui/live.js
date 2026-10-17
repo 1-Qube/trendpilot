@@ -5,6 +5,7 @@
       name: "Karatau Materials",
       sector: "building materials yard",
       label: "Materials yard",
+      size: "small",
       city: "Taraz",
       offer: "cement, insulation, drywall, and delivery inside the city",
       customer: "small crews and households doing repairs",
@@ -16,6 +17,7 @@
       name: "Satti Med",
       sector: "private outpatient clinic",
       label: "Clinic",
+      size: "small",
       city: "Taraz",
       offer: "paid checkups, pediatrics, and basic diagnostics",
       customer: "families who already use Instagram and 2GIS to pick a clinic",
@@ -27,6 +29,7 @@
       name: "Aksu Route Desk",
       sector: "small tour desk",
       label: "Tour desk",
+      size: "micro",
       city: "Taraz",
       offer: "day trips toward Aksu-Zhabagly and the Karatau foothills",
       customer: "visitors and local families booking by phone",
@@ -82,12 +85,12 @@
 
   function company() {
     const s = state();
-    const langCode = (document.getElementById("currentLangCode") || {}).textContent || "EN";
+    const langCode = ((document.getElementById("currentLangCode") || {}).textContent || "EN").trim();
     const language = langCode === "RU" ? "Russian" : langCode === "KK" ? "Kazakh" : "English";
     return {
       name: (s && s.bizName) || "Karatau Materials",
       industry: (s && s.sector) || "local business",
-      size: "small",
+      size: (s && s.size) || "small",
       city: (s && s.city) || "Taraz",
       offer: (s && s.offer) || "",
       customer: (s && s.customer) || "",
@@ -103,24 +106,24 @@
     if (!s) return;
     Object.assign(s, profile);
     s.bizName = profile.name;
-    s.sector = profile.sector;
+    s.sector = profile.sector || profile.industry || "";
     const name = document.getElementById("settingBizName");
     const sector = document.getElementById("settingSector");
     if (name) name.value = profile.name;
     if (sector) {
-      let option = [...sector.options].find((item) => item.value === profile.sector);
+      let option = [...sector.options].find((item) => item.value === s.sector);
       if (!option) {
-        option = new Option(profile.sector, profile.sector, true, true);
+        option = new Option(s.sector, s.sector, true, true);
         sector.add(option);
       }
-      sector.value = profile.sector;
+      sector.value = s.sector;
     }
     const context = document.getElementById("topContextName");
     if (context) context.textContent = profile.name;
     const label = document.getElementById("activePresetLabel");
-    if (label) label.textContent = profile.label;
+    if (label) label.textContent = profile.label || profile.name || "Company profile";
     const tag = document.getElementById("sidebarBizTag");
-    if (tag) tag.textContent = profile.city + " · " + profile.sector;
+    if (tag) tag.textContent = (profile.city || "") + " · " + s.sector;
     fillExtraFields();
     localStorage.setItem("trendpilot-company", JSON.stringify(company()));
   }
@@ -144,8 +147,9 @@
   }
 
   function questionFor(key, custom) {
-    if (custom) return custom;
-    return PROMPTS[key] || "Find one local, evidenced bet. Search public sources, then file findings.";
+    const base = custom || PROMPTS[key] || "Find one local, evidenced bet. Search public sources, then file findings.";
+    const focus = state()?.focusArea;
+    return focus ? `${base}\n\nFocus this research on: ${focus}.` : base;
   }
 
   function switchToChat() {
@@ -155,19 +159,6 @@
     }
     document.getElementById("viewHero")?.classList.add("hidden");
     document.getElementById("viewChat")?.classList.remove("hidden");
-  }
-
-  function star() {
-    return `<svg class="w-5 h-5" viewBox="0 0 40 40" fill="none">
-      <polygon points="20,2 25,15 20,20" fill="#18b4d8"/>
-      <polygon points="20,2 15,15 20,20" fill="#0b7c97"/>
-      <polygon points="38,20 25,25 20,20" fill="#0d8aa8"/>
-      <polygon points="38,20 25,15 20,20" fill="#29c8ec"/>
-      <polygon points="20,38 15,25 20,20" fill="#07596e"/>
-      <polygon points="20,38 25,25 20,20" fill="#0b7c97"/>
-      <polygon points="2,20 15,15 20,20" fill="#14a0c4"/>
-      <polygon points="2,20 15,25 20,20" fill="#08667e"/>
-    </svg>`;
   }
 
   function shell(userMessage) {
@@ -184,39 +175,49 @@
           <div class="text-[14.5px] leading-relaxed">${esc(userMessage)}</div>
         </div>
       </div>
-      <div id="liveAnalystCard" class="bg-white/90 backdrop-blur-xl rounded-3xl p-6 border border-[#d6e4ee] shadow-lg space-y-5 animate-fade-up">
-        <div class="flex items-start gap-3.5">
-          <div class="w-9 h-9 rounded-full bg-[#d8eef5] flex items-center justify-center shrink-0">${star()}</div>
-          <div class="space-y-2 flex-1">
-            <div class="text-xs font-bold uppercase tracking-wider text-[#0b7c97]">TrendPilot</div>
-            <p id="liveStatus" class="text-[14.5px] text-[#1c3448] leading-relaxed">Searching public sources…</p>
-            <div id="liveTrace" class="space-y-1 text-xs text-[#4c6275]"></div>
-          </div>
-        </div>
-        <div id="liveBody"></div>
-      </div>`;
+      <div id="liveProgress" class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-white/85 border border-[#d6e4ee] text-xs font-medium text-[#526b80] shadow-sm" role="status" aria-live="polite">
+        <span id="liveSpinner" class="w-3.5 h-3.5 rounded-full border-2 border-[#c5e2eb] border-t-[#0b7c97] animate-spin shrink-0" aria-hidden="true"></span>
+        <span id="liveStatus">Starting research…</span>
+      </div>
+      <div id="liveBody"></div>`;
+  }
+
+  function setActivity(label, state = "working") {
+    const progress = document.getElementById("liveProgress");
+    const status = document.getElementById("liveStatus");
+    const spinner = document.getElementById("liveSpinner");
+    if (status) status.textContent = label;
+    if (spinner) spinner.classList.toggle("hidden", state !== "working");
+    if (progress) {
+      progress.classList.toggle("text-rose-700", state === "error");
+      progress.classList.toggle("border-rose-200", state === "error");
+      progress.classList.toggle("bg-rose-50", state === "error");
+    }
+  }
+
+  function activityFor(event) {
+    if (event.kind === "search") return "Searching public sources";
+    if (event.kind === "fetch") return "Reading a source";
+    if (event.kind === "note") return "Reviewing evidence";
+    if (event.kind === "findings") return "Putting your findings together";
+    if (event.kind === "error") return event.detail || "Research paused";
+    if (event.kind === "status" && event.title === "Opening page") return "Opening a source";
+    if (event.kind === "status") return "Researching your local market";
+    return "Working on your research";
   }
 
   function addTrace(event) {
-    const trace = document.getElementById("liveTrace");
-    const status = document.getElementById("liveStatus");
-    if (status) status.textContent = event.title || "Working";
-    if (!trace || event.kind === "status") return;
-    const line = document.createElement("div");
-    line.className = "truncate";
-    line.textContent = (event.title || event.kind) + (event.detail ? " — " + event.detail.split("\n")[0] : "");
-    trace.appendChild(line);
+    setActivity(activityFor(event), event.kind === "error" ? "error" : "working");
     document.getElementById("viewChat")?.scrollTo({ top: 99999, behavior: "smooth" });
   }
 
   function renderFindings(findings) {
     const body = document.getElementById("liveBody");
-    const status = document.getElementById("liveStatus");
     if (!findings) {
-      if (status) status.textContent = "The agent finished without a filed bet.";
+      setActivity("Research finished without findings", "error");
       return;
     }
-    if (status) status.textContent = findings.market_read || findings.headline || "Findings filed.";
+    setActivity("Research complete", "complete");
     const bets = findings.bets || [];
     const cards = bets.slice(0, 3).map((bet) => `
       <div class="bg-[#f4f9fc] rounded-2xl p-4 border border-[#dfedf5]">
@@ -293,6 +294,7 @@
     if (badge) badge.textContent = String(s.historySessions.length);
     const recent = document.getElementById("sidebarRecentList");
     if (recent) {
+      document.getElementById("sidebarRecentEmpty")?.classList.add("hidden");
       const button = document.createElement("button");
       button.className = "recent-session-btn w-full text-left px-2.5 py-1.5 rounded-lg text-[12.5px] text-[#496176] hover:bg-[#e4eff6] hover:text-[#0c2033] truncate";
       button.textContent = s.historySessions[0].title;
@@ -314,6 +316,7 @@
     switchToChat();
     container.innerHTML = shell(question);
     let findings = null;
+    let failure = "";
     try {
       const response = await fetch("/research", {
         method: "POST",
@@ -334,15 +337,20 @@
           if (!line.trim()) continue;
           const event = JSON.parse(line);
           if (event.kind === "done") findings = (event.payload || {}).findings || null;
-          else if (event.kind === "error") addTrace(event);
+          else if (event.kind === "error") {
+            failure = event.detail || event.title || "The agent could not finish.";
+            addTrace(event);
+          }
           else addTrace(event);
         }
       }
       renderFindings(findings);
+      if (!findings && failure) {
+        setActivity(failure, "error");
+      }
       remember(question, findings);
     } catch (error) {
-      const status = document.getElementById("liveStatus");
-      if (status) status.textContent = error.message || "The agent could not finish.";
+      setActivity(error.message || "The agent could not finish.", "error");
     } finally {
       busy = false;
     }
@@ -374,6 +382,7 @@
     s.savedInsights = [];
     const recent = document.getElementById("sidebarRecentList");
     if (recent) recent.innerHTML = "";
+    document.getElementById("sidebarRecentEmpty")?.classList.remove("hidden");
     const history = document.getElementById("historyCountBadge");
     const saved = document.getElementById("savedCountBadge");
     if (history) history.textContent = "0";
@@ -399,30 +408,12 @@
   }
 
   function replaceMic() {
+    // The microphone is not speech recognition. Keep it hidden so the demo does not pretend otherwise.
     const mic = document.getElementById("micBtn");
     if (!mic) return;
-    const fresh = mic.cloneNode(true);
-    mic.replaceWith(fresh);
-    let timer = 0;
-    fresh.addEventListener("click", () => {
-      const wave = document.getElementById("voiceWaveform");
-      const active = wave && !wave.classList.contains("hidden");
-      if (!active) {
-        wave?.classList.remove("hidden");
-        wave?.classList.add("flex");
-        timer = setTimeout(() => {
-          wave?.classList.add("hidden");
-          wave?.classList.remove("flex");
-          const input = document.getElementById("promptInput");
-          if (input) input.value = "What local change in Taraz should this business test this week, and what should it ignore?";
-          toast("Voice note transcribed. Press send to research.");
-        }, 1600);
-      } else {
-        clearTimeout(timer);
-        wave.classList.add("hidden");
-        wave.classList.remove("flex");
-      }
-    });
+    mic.hidden = true;
+    mic.classList.add("hidden");
+    mic.setAttribute("aria-hidden", "true");
   }
 
   window.TrendPilotLive = { launch };
