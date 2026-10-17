@@ -20,7 +20,7 @@ uv run trendpilot profiles
 uv run trendpilot serve
 ```
 
-`serve` listens on `http://127.0.0.1:8787`.
+`serve` opens the TrendPilot UI at `http://127.0.0.1:8787` and still accepts `POST /research`.
 
 - `GET /health`
 - `POST /research` with `{"company": {...}, "question": "optional"}`

@@ -8,3 +8,5 @@ wheels/
 
 # Virtual environments
 .venv
+serve.log
+serve.pid

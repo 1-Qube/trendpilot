@@ -1,21 +1,31 @@
-"""Tiny local API so another UI can call the agent. No pages are served."""
+"""Local UI and research API. The page is the downloaded TrendPilot design."""
 
 from __future__ import annotations
 
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import urlparse
 
 from trendpilot.agent import run
 
 HOST = "127.0.0.1"
 PORT = 8787
+UI = Path(__file__).resolve().parent / "ui"
+FILES = {
+    "/": UI / "index.html",
+    "/index.html": UI / "index.html",
+    "/live.js": UI / "live.js",
+}
+TYPES = {
+    ".html": "text/html; charset=utf-8",
+    ".js": "text/javascript; charset=utf-8",
+}
 
 
 def serve() -> None:
     server = ThreadingHTTPServer((HOST, PORT), Handler)
-    print(f"TrendPilot API on http://{HOST}:{PORT}", flush=True)
-    print("POST /research  {\"company\": {...}, \"question\": \"optional\"}", flush=True)
-    print("GET  /health", flush=True)
+    print(f"TrendPilot UI on http://{HOST}:{PORT}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
@@ -24,13 +34,23 @@ def serve() -> None:
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:
-        if self.path.rstrip("/") == "/health":
+        path = urlparse(self.path).path
+        if path == "/health":
             self._json(200, {"ok": True, "service": "trendpilot"})
+            return
+        file_path = FILES.get(path)
+        if file_path and file_path.exists():
+            raw = file_path.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", TYPES.get(file_path.suffix, "application/octet-stream"))
+            self.send_header("Content-Length", str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
             return
         self._json(404, {"error": "not found"})
 
     def do_POST(self) -> None:
-        if self.path.rstrip("/") != "/research":
+        if urlparse(self.path).path.rstrip("/") != "/research":
             self._json(404, {"error": "not found"})
             return
         length = int(self.headers.get("Content-Length") or "0")
@@ -46,18 +66,19 @@ class Handler(BaseHTTPRequestHandler):
         question = body.get("question") or None
         self.send_response(200)
         self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         try:
             for event in run(company, question=question):
-                line = json.dumps(event, ensure_ascii=False) + "\n"
-                self.wfile.write(line.encode("utf-8"))
+                self.wfile.write((json.dumps(event, ensure_ascii=False) + "\n").encode("utf-8"))
                 self.wfile.flush()
         except Exception as exc:
-            line = json.dumps({"kind": "error", "title": "Agent failed", "detail": str(exc)}) + "\n"
-            self.wfile.write(line.encode("utf-8"))
+            self.wfile.write(
+                (json.dumps({"kind": "error", "title": "Agent failed", "detail": str(exc)}) + "\n").encode("utf-8")
+            )
 
     def log_message(self, fmt: str, *args) -> None:
-        print(f"[api] {self.address_string()} {fmt % args}", flush=True)
+        print(f"[ui] {self.address_string()} {fmt % args}", flush=True)
 
     def _json(self, status: int, payload: dict) -> None:
         raw = json.dumps(payload).encode("utf-8")
